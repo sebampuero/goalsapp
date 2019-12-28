@@ -12,6 +12,16 @@ const userModule = require("../modules/userModule");
 const authenticatorMiddleware = require('./middleware').authenticate;
 const deviceAuthMiddleware = require('./middleware').authorizeUserAgent;
 
+router.get('/verifyEmail/:email', deviceAuthMiddleware, (req, res) => {
+    let email = req.params.email;
+    userModule.verifyEmailExists(email).then((result) => {
+        if(result[0])
+            res.sendStatus(400)
+        else
+            res.sendStatus(200);
+    })
+});
+
 /**
  * Logs in a user. Does not require authentication
  */
@@ -65,21 +75,14 @@ router.post('/update/password', authenticatorMiddleware,deviceAuthMiddleware, (r
  */
 router.post('/register',deviceAuthMiddleware, (req, res) => {
     let body = req.body;
+    /*
     userModule.registerUser(body.name, body.lastname, body.email, body.password, body.goals, body.goalTags, body.pushyToken, body.pushyAuthKey, body.base64ProfilePic).then((result)=>{
         res.send(result);
     }).catch((err)=>{
         res.sendStatus(err.errorCode);
     });
-});
-
-router.get('/verifyEmail/:email', deviceAuthMiddleware, (req, res) => {
-    let email = req.params.email;
-    userModule.verifyEmailExists(email).then((result) => {
-        if(result[0].id)
-            res.sendStatus(200);
-        else
-            res.sendStatus(400);
-    })
+    */
+    res.sendStatus(400);
 });
 
 module.exports = router;

@@ -51,12 +51,12 @@ module.exports = {
     // USER
 
     loginUser: (email) => {
-        let sqlStmt = `SELECT id,email,name,lastname,password,profile_pic,pushy_token,pushy_auth_key FROM user WHERE email like ${conn.escape(email)}`;
+        let sqlStmt = `SELECT id,email,name,lastname,password,profile_pic,pushy_token,pushy_auth_key FROM user WHERE email = ${conn.escape(email)}`;
         return sendQuery(sqlStmt);
     },
 
     getUserIdByEmail: (email) => {
-        let sqlStmt = `SELECT id FROM user WHERE email like ${conn.escape(email)} `;
+        let sqlStmt = `SELECT id FROM user WHERE email = ${conn.escape(email)} `;
         return sendQuery(sqlStmt);
     },
 
