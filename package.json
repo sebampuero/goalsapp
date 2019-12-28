@@ -1,0 +1,26 @@
+{
+  "name": "goals-app",
+  "version": "1.0.0",
+  "description": "API Server for MySQL DB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Sebastian Ampuero",
+  "license": "ISC",
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "@ffprobe-installer/ffprobe": "^1.0.12",
+    "cloudinary": "^1.18.1",
+    "crypto": "^1.0.1",
+    "express": "^4.16.4",
+    "fluent-ffmpeg": "^2.1.2",
+    "mysql": "^2.17.1",
+    "pushy": "^2.0.8",
+    "socket.io": "^2.3.0"
+  },
+  "engines": {
+    "node": "10.16.0"
+  }
+}
