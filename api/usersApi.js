@@ -72,4 +72,14 @@ router.post('/register',deviceAuthMiddleware, (req, res) => {
     });
 });
 
+router.get('/verifyEmail/:email', deviceAuthMiddleware, (req, res) => {
+    let email = req.params.email;
+    userModule.verifyEmailExists(email).then((result) => {
+        if(result[0].id)
+            res.sendStatus(200);
+        else
+            res.sendStatus(404);
+    })
+});
+
 module.exports = router;

@@ -55,6 +55,11 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
+    getUserIdByEmail: (email) => {
+        let sqlStmt = `SELECT id FROM user WHERE email like ${conn.escape(email)} `;
+        return sendQuery(sqlStmt);
+    },
+
     updateUser: (userID, name, lastname, email, profilePicUrl) => {
         let sqlStmt = "";
         if (profilePicUrl)
