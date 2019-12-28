@@ -78,7 +78,7 @@ router.get('/verifyEmail/:email', deviceAuthMiddleware, (req, res) => {
         if(result[0].id)
             res.sendStatus(200);
         else
-            res.sendStatus(401);
+            res.sendStatus(400);
     })
 });
 
