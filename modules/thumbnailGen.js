@@ -21,9 +21,6 @@ module.exports = {
         FfmpegCommand.setFfmpegPath(ffmpegPath);
         FfmpegCommand.setFfprobePath(ffprobePath);
         const command = new FfmpegCommand(videoPath);
-        command.ffprobe((err, data) => {
-            console.log(data)
-        });
         command.screenshots({
             timestamps: ['50%'], // at 50% of video length
             filename: 'thumbnail.png',

@@ -142,14 +142,20 @@ module.exports = {
     insertPost: (title, content, userID, goalID, pictureUrl, videoUrl, thumbnailUrl) => {
         let sqlStmt;
         if(pictureUrl)
-            sqlStmt = `INSERT INTO post(title, content, userID, goalID, timestamp, picture)
-                VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(pictureUrl)})`;
+            sqlStmt = (title) ? `INSERT INTO post(title, content, userID, goalID, timestamp, picture)
+                VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(pictureUrl)})`
+                : `INSERT INTO post(content, userID, goalID, timestamp, picture)
+                VALUES(${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(pictureUrl)})`;
         else if(videoUrl)
-            sqlStmt = `INSERT INTO post(title, content, userID, goalID, timestamp, video, video_thumbnail)
-                VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(videoUrl)}, ${conn.escape(thumbnailUrl)})`;
+            sqlStmt = (title) ? `INSERT INTO post(title, content, userID, goalID, timestamp, video, video_thumbnail)
+                VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(videoUrl)}, ${conn.escape(thumbnailUrl)})`
+                : `INSERT INTO post(content, userID, goalID, timestamp, video, video_thumbnail)
+                VALUES(${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(videoUrl)}, ${conn.escape(thumbnailUrl)})`;
         else
-            sqlStmt = `INSERT INTO post(title, content, userID, goalID, timestamp)
-                VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP())`;
+            sqlStmt = (title) ? `INSERT INTO post(title, content, userID, goalID, timestamp)
+                VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP())`
+                : `INSERT INTO post(content, userID, goalID, timestamp)
+                VALUES(${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP())`;
         return sendQuery(sqlStmt);
     },
 
