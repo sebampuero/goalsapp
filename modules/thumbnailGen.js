@@ -27,9 +27,9 @@ module.exports = {
         command.screenshots({
             timestamps: ['50%'], // at 50% of video length
             filename: 'thumbnail.png',
-            folder: filepath + '/uploads', // attention: this path only works on linux based systems
+            folder: filepath + '/uploads' // attention: this path only works on linux based systems
             // on windows use \\
-            size: '530x300'
+            //size: '530x300'
         });
         return filepath + '/uploads/thumbnail.png';
     }
