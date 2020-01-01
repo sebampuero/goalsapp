@@ -13,7 +13,7 @@ const DB_PASSWORD = process.env.DB_PASSWORD;
 
 const dbUser = {
     username: "1gIpVm2rEi",
-    password: DB_PASSWORD 
+    password: DB_PASSWORD
 }
 
 var conn;
@@ -25,7 +25,7 @@ function handleDisconnect() {
         user: dbUser.username,
         password: dbUser.password,
         database: "1gIpVm2rEi",
-        charset : 'utf8mb4'
+        charset: 'utf8mb4'
     });
 
     conn.connect(function (err) {
@@ -89,7 +89,7 @@ module.exports = {
     },
 
     insertUser: (name, lastname, hashedPassword, email, pushyToken, pushyAuthKey, profilePicUrl) => {
-        let sqlStmt = (profilePicUrl) ?  `INSERT INTO user(name, lastname, password, email, pushy_token, pushy_auth_key, profile_pic) 
+        let sqlStmt = (profilePicUrl) ? `INSERT INTO user(name, lastname, password, email, pushy_token, pushy_auth_key, profile_pic) 
             VALUES(${conn.escape(name)}, ${conn.escape(lastname)}, ${conn.escape(hashedPassword)}, ${conn.escape(email)}, ${conn.escape(pushyToken)}, ${conn.escape(pushyAuthKey)}, ${conn.escape(profilePicUrl)})` :
             `INSERT INTO user(name, lastname, password, email, pushy_token, pushy_auth_key) 
 			VALUES(${conn.escape(name)}, ${conn.escape(lastname)}, ${conn.escape(hashedPassword)}, ${conn.escape(email)}, ${conn.escape(pushyToken)}, ${conn.escape(pushyAuthKey)})`;
@@ -146,12 +146,12 @@ module.exports = {
 
     insertPost: (title, content, userID, goalID, pictureUrl, videoUrl, thumbnailUrl) => {
         let sqlStmt;
-        if(pictureUrl)
+        if (pictureUrl)
             sqlStmt = (title) ? `INSERT INTO post(title, content, userID, goalID, timestamp, picture)
                 VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(pictureUrl)})`
                 : `INSERT INTO post(content, userID, goalID, timestamp, picture)
                 VALUES(${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(pictureUrl)})`;
-        else if(videoUrl)
+        else if (videoUrl)
             sqlStmt = (title) ? `INSERT INTO post(title, content, userID, goalID, timestamp, video, video_thumbnail)
                 VALUES(${conn.escape(title)}, ${conn.escape(content)}, ${userID}, ${goalID}, UNIX_TIMESTAMP(), ${conn.escape(videoUrl)}, ${conn.escape(thumbnailUrl)})`
                 : `INSERT INTO post(content, userID, goalID, timestamp, video, video_thumbnail)
@@ -169,7 +169,7 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
-    getPostsWithGoals: (goals,skip, resultsPerPage) => {
+    getPostsWithGoals: (goals, skip, resultsPerPage) => {
         let sqlStmt = `SELECT p.id, u.id as userID, u.name, u.lastname, p.title, p.content, p.timestamp, u.profile_pic as posterPicUrl, p.picture as contentPicUrl,
         (SELECT tag FROM goal WHERE id = p.goalID) as goalTag, (SELECT COUNT(*) FROM comment WHERE postID = p.id) as commentCount, 
         (SELECT GROUP_CONCAT(user_id,",") FROM post_subscription WHERE post_id = p.id) as subscriberIds, p.video as contentVideoUrl, p.video_thumbnail as contentVideoThumbnailUrl
@@ -197,7 +197,7 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
-    getUserPostSubscription: (userID, postID) =>  {
+    getUserPostSubscription: (userID, postID) => {
         let sqlStmt = `SELECT * FROM post_subscription WHERE user_id = ${conn.escape(userID)} AND post_id = ${conn.escape(postID)}`;
         return sendQuery(sqlStmt);
     },
@@ -228,10 +228,10 @@ module.exports = {
 
     insertNotification: (userIds, postId) => {
         let sqlStmt = `INSERT INTO notifications(user_id, post_id, timestamp) VALUES`;
-        for(let i = 0; i < userIds.length; i++){
-            if(i != userIds.length - 1)
+        for (let i = 0; i < userIds.length; i++) {
+            if (i != userIds.length - 1)
                 sqlStmt = sqlStmt + `(${conn.escape(userIds[i])}, ${conn.escape(postId)}, UNIX_TIMESTAMP()),`
-            else if(i == userIds.length - 1)
+            else if (i == userIds.length - 1)
                 sqlStmt = sqlStmt + `(${conn.escape(userIds[i])}, ${conn.escape(postId)}, UNIX_TIMESTAMP());`
         }
         return sendQuery(sqlStmt);
@@ -333,10 +333,10 @@ module.exports = {
 
     insertUsersIntoRoom: (users, roomId) => {
         let sqlStmt = "INSERT INTO rooms_user(user_id, room_id) VALUES";
-        for(let i = 0; i < users.length; i++){
-            if(i != users.length - 1)
+        for (let i = 0; i < users.length; i++) {
+            if (i != users.length - 1)
                 sqlStmt = sqlStmt + `(${conn.escape(users[i])}, ${conn.escape(roomId)}),`
-            else if(i == users.length - 1)
+            else if (i == users.length - 1)
                 sqlStmt = sqlStmt + `(${conn.escape(users[i])}, ${conn.escape(roomId)});`
         }
         return sendQuery(sqlStmt);
@@ -347,7 +347,7 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
-    getRoomIdByName: (roomName) =>  {
+    getRoomIdByName: (roomName) => {
         let sqlStmt = `SELECT id FROM room WHERE room like ${conn.escape(roomName)}`;
         return sendQuery(sqlStmt);
     },
@@ -380,7 +380,7 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
-    insertChat: (userId, roomId,  text) => {
+    insertChat: (userId, roomId, text) => {
         let sqlStmt = `INSERT INTO chat_message(timestamp, text, room_id, user_id) 
             VALUES(UNIX_TIMESTAMP(), ${conn.escape(text)}, ${conn.escape(roomId)}, ${conn.escape(userId)})`;
         let sqlStmt2 = `UPDATE room SET last_timestamp = UNIX_TIMESTAMP() WHERE id = ${conn.escape(roomId)}`;
@@ -388,9 +388,14 @@ module.exports = {
     },
 
     // 0 -> read, 1 -> new messages
-    setNewMessageInRoom: (userId, roomId, value) => {
-        let sqlStmt = `UPDATE rooms_user SET new_message=${conn.escape(value)} 
-            WHERE user_id = ${conn.escape(userId)} AND room_id = ${conn.escape(roomId)}`;
+    setNewMessageInRoom: (users, roomId, value) => {
+        let userIds = [];
+        let sqlStmt = "UPDATE rooms_user SET new_message = (CASE user_id WHEN ";
+        for(let i in users){
+            userIds.push(users[i].id);
+            sqlStmt = sqlStmt + `${conn.escape(userIds[i])} THEN ${conn.escape(value)}`;
+        }
+        sqlStmt = sqlStmt + ` END) WHERE user_id in (${conn.escape(userIds)}) AND room_id = ${conn.escape(roomId)}`;
         return sendQuery(sqlStmt);
     },
 
