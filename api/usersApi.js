@@ -12,6 +12,21 @@ const userModule = require("../modules/userModule");
 const authenticatorMiddleware = require('./middleware').authenticate;
 const deviceAuthMiddleware = require('./middleware').authorizeUserAgent;
 
+/**
+ * Returns the user activity with id
+ */
+router.get('/userActivity/:id', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => {
+    let userId = req.params.id;
+    userModule.getUserActivity(userId).then((activityResult) => {
+        res.send(activityResult);
+    }).catch(() => {
+        res.sendStatus(500);
+    })
+});
+
+/**
+ * Returns a given status depending if email exists.
+ */
 router.get('/verifyEmail/:email', deviceAuthMiddleware, (req, res) => {
     let email = req.params.email;
     userModule.verifyEmailExists(email).then((result) => {

@@ -136,6 +136,11 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
+    getUserChatActivityById: (userId) => {
+        let sqlStmt = `SELECT * FROM rooms_user WHERE user_id = ${conn.escape(userId)}`;
+        return sendQuery(sqlStmt);
+    },
+
 
     // POST
 

@@ -199,7 +199,34 @@ module.exports = {
         });
     },
 
+    /**
+     * Verifies if an email exists
+     */
     verifyEmailExists: (email) => {
         return db.getUserIdByEmail(email);
+    },
+
+    /**
+     * Returns the activity of a user. A user has for instance activity on a chat. If there are unread
+     * messages, the chat activity is set to true. In the future, activity for notifications that weren't read
+     * should be also retrieved.
+     */
+    getUserActivity: (userId) => {
+        return new Promise((resolve, reject) => {
+            db.getUserChatActivityById(userId).then((result) => {
+                for(let i in result){
+                    if(result[i].new_message == "1")
+                        resolve({
+                            chatActivity: true
+                        });
+                }
+                resolve({
+                    chatActivity: false
+                });
+            }).catch((err) => {
+                console.log(err);
+                reject();
+            });
+        })
     }
 }
