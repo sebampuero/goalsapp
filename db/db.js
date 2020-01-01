@@ -406,8 +406,12 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
-    getReceiverIdInRoom: (roomId, senderId) => {
-        let sqlStmt = `SELECT user_id FROM rooms_user WHERE room_id = ${conn.escape(roomId)} and user_id != ${conn.escape(senderId)}`;
+    getReceiversInRoom: (roomId, senderId) => {
+        let sqlStmt = `SELECT * FROM
+        user u 
+        INNER JOIN rooms_user ru 
+        ON ru.user_id = u.id
+        WHERE ru.room_id = ${conn.escape(roomId)} and u.id != ${conn.escape(senderId)}`;
         return sendQuery(sqlStmt);
     },
 

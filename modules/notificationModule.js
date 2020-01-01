@@ -49,7 +49,7 @@ module.exports = {
      * @param {String} commenterId
      */
     sendCommentNotificationForPostSubscribers: (postId, commenterId) => {
-        db.getPostSubcribers(postId, commenterId).then((subscribersArr) => { 
+        db.getPostSubcribers(postId, commenterId).then((subscribersArr) => {
             db.getUserById(commenterId).then((commenterResult) => {
                 let to = [];
                 let userIds = [];
@@ -63,7 +63,7 @@ module.exports = {
                     commenterName: commenterResult[0].name
                 }
                 let options = {};
-                if(to.length > 0){
+                if (to.length > 0) {
                     executeNotificationSending(data, to, options);
                     db.insertNotification(userIds, postId);
                 }
@@ -101,20 +101,20 @@ module.exports = {
     sendMessageNotification: (senderId, roomName) => {
         return db.getRoomIdByName(roomName).then((roomResult) => { // get the room id
             return db.getUserById(senderId).then((userResult) => { // get the sender's data
-                return db.getReceiverIdInRoom(roomResult[0].id, senderId).then((receiverResult) => { // get the receiver's id
-                    return db.getTokenAndAuth(receiverResult[0].user_id).then((pushyCredsResult) => { // get the receiver's pushy data
-                        let data = {
-                            id: notificationIds.NEW_MESSAGE,
-                            roomId: roomResult[0].id,
-                            roomName,
-                            senderName: userResult[0].name,
-                            senderProfilePicUrl: userResult[0].profile_pic,
-                            senderId: userResult[0].id
-                        };
-                        let to = [pushyCredsResult[0].pushy_token];
-                        let options = {};
-                        executeNotificationSending(data, to, options);
-                    })
+                return db.getReceiversInRoom(roomResult[0].id, senderId).then((receiversResult) => { // get the receiver's data
+                    let data = {
+                        id: notificationIds.NEW_MESSAGE,
+                        roomId: roomResult[0].id,
+                        roomName,
+                        senderName: userResult[0].name,
+                        senderProfilePicUrl: userResult[0].profile_pic,
+                        senderId: userResult[0].id
+                    };
+                    let to = [];
+                    for(let i in receiversResult)
+                        to.push(receiversResult[i].pushy_token);
+                    let options = {};
+                    executeNotificationSending(data, to, options);
                 });
             });
         });
