@@ -305,11 +305,14 @@ module.exports = {
     },
 
     insertGoalsToUserID: (goals, userID) => {
-        let sqlStmt;
+        let sqlStmt = "INSERT INTO goals_user(user_id, goal_id) VALUES";
         for (let i = 0; i < goals.length; i++) {
-            sqlStmt = `INSERT INTO goals_users(user_id, goal_id) VALUES(${conn.escape(userID)}, ${conn.escape(goals[i])})`;
-            sendQuery(sqlStmt);
+            if (i != goals.length - 1)
+                sqlStmt = sqlStmt + `(${conn.escape(userID)}, ${conn.escape(goals[i])}),`
+            else if (i == goals.length - 1)
+                sqlStmt = sqlStmt + `(${conn.escape(userID)}, ${conn.escape(goals[i])});`
         }
+        sendQuery(sqlStmt);
     },
 
     deleteGoalsFromUser: (userID) => {
@@ -391,7 +394,7 @@ module.exports = {
     setNewMessageInRoom: (users, roomId, value) => {
         let userIds = [];
         let sqlStmt = "UPDATE rooms_user SET new_message = (CASE user_id WHEN ";
-        for(let i in users){
+        for (let i in users) {
             userIds.push(users[i].id);
             sqlStmt = sqlStmt + `${conn.escape(userIds[i])} THEN ${conn.escape(value)}`;
         }
