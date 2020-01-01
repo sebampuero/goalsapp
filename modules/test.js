@@ -1,8 +1,8 @@
-const gen = require('./thumbnailGen');
+const db = require('../db/db');
 
 
 function test() {
-    gen.generateThumbnail(__dirname + "/uploads/813_post_z5wfyw.mp4");
+    db.setNewMessageInRoom([{id: 68}], 67, 0);
 }
 
 test();

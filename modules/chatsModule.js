@@ -89,8 +89,8 @@ module.exports = {
                     resolve()
                 else { // if there are clients in room no need to set the flag in the other end that there are new messages because
                     // the other client has the socket open and seeing new messages coming in
-                    db.getReceiverIdInRoom(roomId, senderId).then((receiverId) => {
-                        db.setNewMessageInRoom(receiverId[0].user_id, roomId, 1);
+                    db.getReceiversInRoom(roomId, senderId).then((receiverResults) => {
+                        db.setNewMessageInRoom(receiverResults, roomId, 1);
                         resolve();
                     })
                 }
@@ -107,7 +107,7 @@ module.exports = {
      */
     setChatRoomMessagesRead: (roomName, senderId) => {
         db.getRoomIdByName(roomName).then((roomId) => {
-            db.setNewMessageInRoom(senderId, roomId[0].id, 0).then(() => { }).catch((err) => {
+            db.setNewMessageInRoom([{id: senderId}], roomId[0].id, 0).then(() => { }).catch((err) => {
                 console.log(err);
             });
         })

@@ -102,8 +102,8 @@ module.exports = {
                         });
                     chatModule.insertChatIntoDb(userId, roomId, message, otherClientInRoom).then(() => {
                         socket.broadcast.to(room).emit('message', roomId, userId, message, Math.floor(new Date() / 1000));
-                    }).catch(() => {
-                        console.log(`Error ocurred`);
+                    }).catch((err) => {
+                        console.log(err);
                         socket.emit('errorEvent');
                     })
                 }
