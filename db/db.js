@@ -305,7 +305,7 @@ module.exports = {
     },
 
     insertGoalsToUserID: (goals, userID) => {
-        let sqlStmt = "INSERT INTO goals_user(user_id, goal_id) VALUES";
+        let sqlStmt = "INSERT INTO goals_users(user_id, goal_id) VALUES";
         for (let i = 0; i < goals.length; i++) {
             if (i != goals.length - 1)
                 sqlStmt = sqlStmt + `(${conn.escape(userID)}, ${conn.escape(goals[i])}),`
