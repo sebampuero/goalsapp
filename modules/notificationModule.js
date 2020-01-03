@@ -99,9 +99,9 @@ module.exports = {
      * @param {String} roomName 
      */
     sendMessageNotification: (senderId, roomName) => {
-        return db.getRoomIdByName(roomName).then((roomResult) => { // get the room id
-            return db.getUserById(senderId).then((userResult) => { // get the sender's data
-                return db.getReceiversInRoom(roomResult[0].id, senderId).then((receiversResult) => { // get the receiver's data
+        db.getRoomIdByName(roomName).then((roomResult) => { // get the room id
+            db.getUserById(senderId).then((userResult) => { // get the sender's data
+                db.getReceiversInRoom(roomResult[0].id, senderId).then((receiversResult) => { // get the receiver's data
                     let data = {
                         id: notificationIds.NEW_MESSAGE,
                         roomId: roomResult[0].id,
@@ -111,7 +111,7 @@ module.exports = {
                         senderId: userResult[0].id
                     };
                     let to = [];
-                    for(let i in receiversResult)
+                    for (let i in receiversResult)
                         to.push(receiversResult[i].pushy_token);
                     let options = {};
                     executeNotificationSending(data, to, options);

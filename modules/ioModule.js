@@ -97,9 +97,7 @@ module.exports = {
                             otherClientInRoom = true;
                     }
                     if (!otherClientInRoom) // if the other user is NOT in the chat, send a push notification
-                        notificationModule.sendMessageNotification(userId, room).catch(() => {
-                            socket.emit('errorEvent');
-                        });
+                        notificationModule.sendMessageNotification(userId, room);
                     chatModule.insertChatIntoDb(userId, roomId, message, otherClientInRoom).then(() => {
                         socket.broadcast.to(room).emit('message', roomId, userId, message, Math.floor(new Date() / 1000));
                     }).catch((err) => {
