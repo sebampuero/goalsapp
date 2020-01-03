@@ -10,12 +10,11 @@
 const router = require("express").Router();
 const userModule = require("../modules/userModule");
 const authenticatorMiddleware = require('./middleware').authenticate;
-const deviceAuthMiddleware = require('./middleware').authorizeUserAgent;
 
 /**
  * Returns the user activity with id
  */
-router.get('/userActivity/:id', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => {
+router.get('/userActivity/:id', authenticatorMiddleware, (req, res) => {
     let userId = req.params.id;
     userModule.getUserActivity(userId).then((activityResult) => {
         res.send(activityResult);
@@ -27,7 +26,7 @@ router.get('/userActivity/:id', authenticatorMiddleware, deviceAuthMiddleware, (
 /**
  * Returns a given status depending if email exists.
  */
-router.get('/verifyEmail/:email', deviceAuthMiddleware, (req, res) => {
+router.get('/verifyEmail/:email', (req, res) => {
     let email = req.params.email;
     userModule.verifyEmailExists(email).then((result) => {
         if(result[0])
@@ -40,7 +39,7 @@ router.get('/verifyEmail/:email', deviceAuthMiddleware, (req, res) => {
 /**
  * Logs in a user. Does not require authentication
  */
-router.post('/login', deviceAuthMiddleware, (req, res) => {
+router.post('/login', (req, res) => {
     let body = req.body;
     userModule.checkLogin(body.email, body.password).then((result) => {
         res.send(result);
@@ -52,7 +51,7 @@ router.post('/login', deviceAuthMiddleware, (req, res) => {
 /**
  * Retrieves the details of a user
  */
-router.get('/:id', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => {
+router.get('/:id', authenticatorMiddleware, (req, res) => {
     let userId = req.params.id;
     userModule.getUserDetails(userId).then((result) => {
         res.send(result);
@@ -64,7 +63,7 @@ router.get('/:id', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => 
 /**
  * Updates information about a user
  */
-router.post('/update', authenticatorMiddleware,deviceAuthMiddleware, (req, res) => {
+router.post('/update', authenticatorMiddleware, (req, res) => {
     let body = req.body;
     userModule.updateUser(body.id, body.name, body.lastname, body.email, body.goals, body.goalTags, body.base64ProfilePic).then((result) => {
         res.send(result);
@@ -76,7 +75,7 @@ router.post('/update', authenticatorMiddleware,deviceAuthMiddleware, (req, res) 
 /**
  * Updates the user`s password
  */
-router.post('/update/password', authenticatorMiddleware,deviceAuthMiddleware, (req, res) => {
+router.post('/update/password', authenticatorMiddleware, (req, res) => {
     let body = req.body;
     userModule.updateUserPassword(body.oldPassword, body.newPassword, body.userID).then((result) => {
 		res.sendStatus(200);
@@ -88,7 +87,7 @@ router.post('/update/password', authenticatorMiddleware,deviceAuthMiddleware, (r
 /**
  * Registers the user. Does not require authentication.
  */
-router.post('/register',deviceAuthMiddleware, (req, res) => {
+router.post('/register', (req, res) => {
     let body = req.body;
     userModule.registerUser(body.name, body.lastname, body.email, body.password, body.goals, body.goalTags, body.pushyToken, body.pushyAuthKey, body.base64ProfilePic).then((result)=>{
         res.send(result);

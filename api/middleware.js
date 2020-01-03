@@ -20,14 +20,5 @@ module.exports = {
             else
                 res.sendStatus(401); // token does not exist therefore user cant be authenticated
         })
-    },
-
-    authorizeUserAgent: (req, res, next) => {
-        let isFromAndroid = req.header("User-Agent").match("okhttp/3.10.0");
-        if(isFromAndroid)
-            next()
-        else    
-            res.sendStatus(401);
     }
-
 }

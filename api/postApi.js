@@ -10,12 +10,11 @@
 const router = require("express").Router();
 const postModule = require("../modules/postModule");
 const authenticatorMiddleware = require('./middleware').authenticate;
-const deviceAuthMiddleware = require('./middleware').authorizeUserAgent;
 
 /**
  * Retrieves all post of a given user
  */
-router.get('/user/:id/:page', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => {
+router.get('/user/:id/:page', authenticatorMiddleware, (req, res) => {
     let userId = req.params.id;
     let page = req.params.page;
     postModule.getPostsByUserId(userId, page).then((result) => {
@@ -29,7 +28,7 @@ router.get('/user/:id/:page', authenticatorMiddleware, deviceAuthMiddleware, (re
 /**
  * Subscribes a user to a given post
  */
-router.post('/subscription', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.post('/subscription', authenticatorMiddleware,(req, res) => {
     let userID = req.query.userID;
     let postID = req.query.postID;
     postModule.deletePostSubscription(userID, postID).then(() => {
@@ -43,7 +42,7 @@ router.post('/subscription', authenticatorMiddleware, deviceAuthMiddleware,(req,
 /**
  * Deletes a given post
  */
-router.delete('/:id', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.delete('/:id', authenticatorMiddleware,(req, res) => {
     let postId = req.params.id;
     postModule.deletePostById(postId).then(() => {
         res.sendStatus(200);
@@ -56,7 +55,7 @@ router.delete('/:id', authenticatorMiddleware, deviceAuthMiddleware,(req, res) =
 /**
  * Get posts by goal 
  */
-router.get('/goal/:id', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.get('/goal/:id', authenticatorMiddleware,(req, res) => {
     let goalId = req.params.id;
     postModule.getPostsByGoalId(goalId).then((result) => {
         res.send(result);
@@ -68,7 +67,7 @@ router.get('/goal/:id', authenticatorMiddleware, deviceAuthMiddleware,(req, res)
 /**
  * Get all post for an array of goals
  */
-router.post('/goals/:page', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.post('/goals/:page', authenticatorMiddleware,(req, res) => {
     let goalsArr = req.body;
     let page = req.params.page;
     postModule.getPostsWithGoals(goalsArr, page).then((result) => {
@@ -82,7 +81,7 @@ router.post('/goals/:page', authenticatorMiddleware, deviceAuthMiddleware,(req, 
 /**
  * Inserts a given post
  */
-router.post('/', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.post('/', authenticatorMiddleware,(req, res) => {
     let postBody = req.body;
     postModule.insertPost(postBody.title, postBody.content, postBody.userID, postBody.goalId, postBody.base64Image, postBody.base64Video).then(() => {
         res.sendStatus(200);
@@ -95,7 +94,7 @@ router.post('/', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
 /**
  * Deletes a comment
  */
-router.delete('/comment/:id', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.delete('/comment/:id', authenticatorMiddleware,(req, res) => {
     let commentId = req.params.id;
     postModule.deleteCommentById(commentId).then(() => {
         res.sendStatus(200);
@@ -108,7 +107,7 @@ router.delete('/comment/:id', authenticatorMiddleware, deviceAuthMiddleware,(req
 /**
  * Retrieves comments for a given post
  */
-router.get('/comments/:id',authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.get('/comments/:id',authenticatorMiddleware,(req, res) => {
     let postId = req.params.id;
     postModule.getCommentsByPostId(postId).then((result) =>{
         res.send(result);
@@ -121,7 +120,7 @@ router.get('/comments/:id',authenticatorMiddleware, deviceAuthMiddleware,(req, r
 /**
  * Inserts a comment
  */
-router.post('/comment', authenticatorMiddleware,deviceAuthMiddleware, (req, res) => {
+router.post('/comment', authenticatorMiddleware, (req, res) => {
     let body = req.body;
     postModule.insertCommentToPost(body.content, body.userID, body.postID).then((result) => {
         res.send(result);

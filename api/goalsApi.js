@@ -10,12 +10,11 @@
 const router = require("express").Router();
 const goalModule = require("../modules/goalModule");
 const authenticatorMiddleware = require('./middleware').authenticate;
-const deviceAuthMiddleware = require('./middleware').authorizeUserAgent;
 
 /**
  * Inserts a goal request
  */
-router.post('/goal', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => {
+router.post('/goal', authenticatorMiddleware, (req, res) => {
     let body = req.body;
     goalModule.insertGoalRequest(body.goals, body.userID).then(() => {
         res.sendStatus(200);
@@ -25,7 +24,7 @@ router.post('/goal', authenticatorMiddleware, deviceAuthMiddleware, (req, res) =
 /**
  * Retrieves the goals
  */
-router.get('/', deviceAuthMiddleware,(req, res) => {
+router.get('/' , (req, res) => {
     goalModule.getGoals().then((goals) => {
         res.send(goals);
     }).catch((err) => {

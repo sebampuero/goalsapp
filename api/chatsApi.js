@@ -10,12 +10,11 @@
 const router = require("express").Router();
 const chatsModule = require('../modules/chatsModule');
 const authenticatorMiddleware = require('./middleware').authenticate;
-const deviceAuthMiddleware = require('./middleware').authorizeUserAgent;
 
 /**
  * Retrieves the chat rooms of a given user
  */
-router.get('/rooms/:id', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => {
+router.get('/rooms/:id', authenticatorMiddleware, (req, res) => {
     let userId = req.params.id;
     chatsModule.getRoomsData(userId).then((rooms) => {
         res.send(rooms);
@@ -28,7 +27,7 @@ router.get('/rooms/:id', authenticatorMiddleware, deviceAuthMiddleware, (req, re
 /**
  * Retrieves the chat messages of a chat room
  */
-router.get('/:id/:page', authenticatorMiddleware, deviceAuthMiddleware, (req, res) => {
+router.get('/:id/:page', authenticatorMiddleware, (req, res) => {
     let roomId = req.params.id;
     let page = req.params.page;
     chatsModule.getChatsData(roomId, page).then((chats) => {
@@ -42,7 +41,7 @@ router.get('/:id/:page', authenticatorMiddleware, deviceAuthMiddleware, (req, re
 /**
  * Deletes a chat room
  */
-router.delete('/:id', authenticatorMiddleware, deviceAuthMiddleware,(req, res) => {
+router.delete('/:id', authenticatorMiddleware,(req, res) => {
     let roomId = req.params.id; 
     chatsModule.deleteRoom(roomId).then(() => {
         res.sendStatus(200);
