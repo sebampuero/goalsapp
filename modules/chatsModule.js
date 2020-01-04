@@ -8,6 +8,7 @@
  */
 
 const db = require('../db/db');
+const resultsPerPage = 20;
 
 module.exports = {
 
@@ -69,10 +70,22 @@ module.exports = {
      * Get all chats messages for a chat room
      * @param {String} roomId
      */
-    getChatsData: (roomId, page) => {
-        let resultsPerPage = 20;
+    getChatsForRoom: (roomId, page) => {
         let skip = page * resultsPerPage;
         return db.getChatsByRoomId(roomId, skip, resultsPerPage);
+    },
+
+    getNumberOfPagesForChats: (roomId) => {
+        return new Promise((resolve, reject) => {
+            db.getTotalNumberOfMessages(roomId).then((total) => {
+                resolve({
+                    pages: Math.ceil(total[0].total / resultsPerPage)
+                })
+            }).catch((err) => {
+                console.log(err);
+                reject();
+            })
+        })
     },
 
     /**

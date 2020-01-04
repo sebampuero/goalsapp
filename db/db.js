@@ -201,6 +201,15 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
+    getTotalNumberOfPostsOfUser: (id) => {
+        let sqlStmt = `SELECT COUNT(*) as total
+            FROM post p 
+            INNER JOIN user u
+            ON p.userID = u.id
+            WHERE u.id = ${conn.escape(id)}`;
+        return sendQuery(sqlStmt);
+    },
+
     deletePostById: (postId) => {
         let sqlStmt = `DELETE FROM post WHERE id = ${conn.escape(postId)}`;
         return sendQuery(sqlStmt);
@@ -389,6 +398,15 @@ module.exports = {
             ON r.id = cm.room_id
             WHERE r.id = ${conn.escape(roomId)}
             ORDER BY timestamp DESC LIMIT ${conn.escape(skip)}, ${conn.escape(resultsPerPage)}`;
+        return sendQuery(sqlStmt);
+    },
+
+    getTotalNumberOfMessages: (roomId) => {
+        let sqlStmt = `SELECT COUNT(*) as total
+            FROM chat_message cm
+            INNER JOIN room r
+            ON r.id = cm.room_id
+            WHERE r.id = ${conn.escape(roomId)}`;
         return sendQuery(sqlStmt);
     },
 

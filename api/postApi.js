@@ -25,6 +25,15 @@ router.get('/user/:id/:page', authenticatorMiddleware, (req, res) => {
     })
 });
 
+router.get('/user/pagination/totalPages/:id', authenticatorMiddleware, (req, res) => {
+    let userId = req.params.id;
+    postModule.getTotalPagesOfUserPosts(userId).then((result) => {
+        res.send(result.pages.toString());
+    }).catch(() => {
+        res.sendStatus(500);
+    })
+});
+
 /**
  * Subscribes a user to a given post
  */
@@ -72,9 +81,20 @@ router.post('/goals/:page', authenticatorMiddleware,(req, res) => {
     let page = req.params.page;
     postModule.getPostsWithGoals(goalsArr, page).then((result) => {
         res.send(result);
-    }).catch(() => {
+    }).catch((err) => {
+        console.log(err);
         res.sendStatus(500);
     });
+});
+
+router.post('/goals/pagination/totalPages', authenticatorMiddleware, (req, res) => {
+    let goalsArr = req.body;
+    postModule.getTotalPagesWithGoals(goalsArr).then((result) => {
+        res.send(result.pages.toString());
+    }).catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
+    })
 });
 
 /**

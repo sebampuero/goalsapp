@@ -30,10 +30,19 @@ router.get('/rooms/:id', authenticatorMiddleware, (req, res) => {
 router.get('/:id/:page', authenticatorMiddleware, (req, res) => {
     let roomId = req.params.id;
     let page = req.params.page;
-    chatsModule.getChatsData(roomId, page).then((chats) => {
+    chatsModule.getChatsForRoom(roomId, page).then((chats) => {
         res.send(chats);
     }).catch((err) => {
         console.log(err);
+        res.sendStatus(500);
+    })
+});
+
+router.get('/pagination/totalPages/:id', authenticatorMiddleware, (req, res) => {
+    let roomId = req.params.id;
+    chatsModule.getNumberOfPagesForChats(roomId).then((result) => {
+        res.send(result.pages.toString());
+    }).catch(() => {
         res.sendStatus(500);
     })
 });

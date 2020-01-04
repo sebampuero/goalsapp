@@ -10,8 +10,10 @@
 const db = require("../db/db");
 const fileUtils = require("../modules/fileUtils");
 const notificationModule = require('../modules/notificationModule');
+const resultsPerPagePagination = 5;
 
 module.exports = {
+
     
     /**
      * Inserts a post
@@ -52,23 +54,20 @@ module.exports = {
      * @param {Array} goals 
      */
     getPostsWithGoals: (goals,page ) => {
-        let resultsPerPage = 5;
-        skip = page * resultsPerPage
+        skip = page * resultsPerPagePagination
+        return db.getPostsWithGoals(goals, skip, resultsPerPagePagination );
+    },
+
+    getTotalPagesWithGoals: (goals) => {
         return new Promise((resolve, reject) => {
-            db.getPostsWithGoals(goals, skip, resultsPerPage ).then((posts) => {
-                db.getTotalNumberOfPostsWithGoals(goals).then((number) => {
-                    for(let i in posts){
-                        posts[i].totalPages = Math.ceil(number[0].total / resultsPerPage);
-                    }
-                    resolve(posts);
-                }).catch((err) => {
-                    console.log(err);
-                    reject();
-                });
+            db.getTotalNumberOfPostsWithGoals(goals).then((total) => {
+                resolve({
+                    pages: Math.ceil(total[0].total / resultsPerPagePagination)
+                })
             }).catch((err) => {
                 console.log(err);
                 reject();
-            })
+            });
         })
     },
 
@@ -76,9 +75,21 @@ module.exports = {
      * Gets post by user id
      */
     getPostsByUserId: (userId, page) => {
-        let resultsPerPage = 3;
-        skip = page * resultsPerPage;
-        return db.getPostsByUserId(userId, skip, resultsPerPage);
+        skip = page * resultsPerPagePagination;
+        return db.getPostsByUserId(userId, skip, resultsPerPagePagination);
+    },
+
+    getTotalPagesOfUserPosts: (id) => {
+        return new Promise((resolve, reject) => {
+            db.getTotalNumberOfPostsOfUser(id).then((total) => {
+                resolve({
+                    pages: Math.ceil(total[0].total / resultsPerPagePagination)
+                })
+            }).catch((err) => {
+                console.log(err);
+                reject();
+            })
+        });
     },
 
     /**
