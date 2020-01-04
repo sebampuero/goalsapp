@@ -181,6 +181,15 @@ module.exports = {
         return sendQuery(sqlStmt);
     },
 
+    getTotalNumberOfPostsWithGoals: (goals) => {
+        let sqlStmt = `SELECT COUNT(*) as total
+            FROM post p 
+            JOIN user u 
+            ON p.userID = u.id 
+            WHERE p.goalID IN (${conn.escape(goals)})`;
+        return sendQuery(sqlStmt);
+    },
+
     getPostsByUserId: (id, skip, resultsPerPage) => {
         let sqlStmt = `SELECT p.id, u.id as userID, p.title, p.content, p.timestamp, (SELECT tag FROM goal WHERE id = p.goalID) as goalTag, u.name, u.lastname, u.profile_pic as posterPicUrl, p.picture as contentPicUrl,
                 (SELECT COUNT(*) FROM comment WHERE postID = p.id) as commentCount, (SELECT GROUP_CONCAT(user_id,",") FROM post_subscription WHERE post_id = p.id) as subscriberIds, p.video as contentVideoUrl, p.video_thumbnail as contentVideoThumbnailUrl

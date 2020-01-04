@@ -72,8 +72,7 @@ router.post('/goals/:page', authenticatorMiddleware,(req, res) => {
     let page = req.params.page;
     postModule.getPostsWithGoals(goalsArr, page).then((result) => {
         res.send(result);
-    }).catch((err) => {
-        console.log(err);
+    }).catch(() => {
         res.sendStatus(500);
     });
 });

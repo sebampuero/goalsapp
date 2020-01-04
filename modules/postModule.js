@@ -54,7 +54,22 @@ module.exports = {
     getPostsWithGoals: (goals,page ) => {
         let resultsPerPage = 5;
         skip = page * resultsPerPage
-        return db.getPostsWithGoals(goals, skip, resultsPerPage );
+        return new Promise((resolve, reject) => {
+            db.getPostsWithGoals(goals, skip, resultsPerPage ).then((posts) => {
+                db.getTotalNumberOfPostsWithGoals(goals).then((number) => {
+                    for(let i in posts){
+                        posts[i].totalPages = Math.ceil(number[0].total / resultsPerPage);
+                    }
+                    resolve(posts);
+                }).catch((err) => {
+                    console.log(err);
+                    reject();
+                });
+            }).catch((err) => {
+                console.log(err);
+                reject();
+            })
+        })
     },
 
     /**
