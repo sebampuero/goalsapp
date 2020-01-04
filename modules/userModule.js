@@ -108,8 +108,8 @@ module.exports = {
             fileUtils.saveImageFile(profilePicData, filename).then((imageUrl) => {
                 db.updateUser(id, name, lastname, email, imageUrl).then(() => {
                     db.getUserById(id).then((result) => {
+                        db.deleteGoalsFromUser(id);
                         if (goalIds.length > 0) {
-                            db.deleteGoalsFromUser(id);
                             db.insertGoalsToUserID(goalIds, result[0].id);
                         }
                         resolve({
