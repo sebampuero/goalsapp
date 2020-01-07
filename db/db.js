@@ -278,7 +278,7 @@ module.exports = {
     },
 
     getLastInsertedComment: () => {
-        let sqlStmt = `SELECT c.content, u.name, u.lastname, c.timestamp, u.id as userID, u.profile_pic as commentatorPicUrl
+        let sqlStmt = `SELECT c.id, c.content, u.name, u.lastname, c.timestamp, u.id as userID, u.profile_pic as commentatorPicUrl
             FROM comment c INNER JOIN user u 
             ON c.userID = u.id WHERE c.id = LAST_INSERT_ID()`;
         return sendQuery(sqlStmt);
