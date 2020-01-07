@@ -87,6 +87,11 @@ module.exports = {
                     socket.broadcast.to(room).emit('isTyping');
             });
 
+            socket.on("roomDeleted", (room) => {
+                if(socketsMapping[socket.id])
+                    socket.broadcast.to(room).emit("roomDeleted");
+            })
+
             socket.on('message', (userId, roomId, room, message) => {
                 if (socketsMapping[socket.id]) {
                     let otherClientInRoom = false;
