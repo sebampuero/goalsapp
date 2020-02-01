@@ -256,9 +256,13 @@ module.exports = {
     },
 
     getNotificationsByUserId: (userId, skip, resultsPerPage) => {
-        let sqlStmt = `SELECT post_id as postId, timestamp, id as notificationId
-            FROM notifications
-            WHERE user_id = ${conn.escape(userId)}
+        let sqlStmt = `SELECT n.post_id as postId, n.timestamp, n.id as notificationId, u.name
+            FROM notifications n
+            INNER JOIN post p
+            ON p.id = n.post_id
+            INNER JOIN user u
+            ON u.id = p.userID
+            WHERE n.user_id = ${conn.escape(userId)}
             ORDER BY timestamp DESC LIMIT ${conn.escape(skip)}, ${conn.escape(resultsPerPage)}`;
         return sendQuery(sqlStmt);
     },
