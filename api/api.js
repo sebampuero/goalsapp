@@ -12,10 +12,12 @@ const goalsApi = require("./goalsApi");
 const usersApi = require('./usersApi');
 const postsApi = require('./postApi');
 const chatsApi = require('./chatsApi');
+const notificationsApi = require('./notificationsApi');
 
 router.use("/goals", goalsApi);
 router.use("/users", usersApi);
 router.use("/posts", postsApi);
 router.use("/chats", chatsApi);
+router.use("/notifications", notificationsApi);
 
 module.exports = router;

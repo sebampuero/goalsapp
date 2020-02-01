@@ -256,10 +256,17 @@ module.exports = {
     },
 
     getNotificationsByUserId: (userId, skip, resultsPerPage) => {
-        let sqlStmt = `SELECT post_id as postId, timestamp
+        let sqlStmt = `SELECT post_id as postId, timestamp, id as notificationId
             FROM notifications
             WHERE user_id = ${conn.escape(userId)}
             ORDER BY timestamp DESC LIMIT ${conn.escape(skip)}, ${conn.escape(resultsPerPage)}`;
+        return sendQuery(sqlStmt);
+    },
+
+    getTotalNumberOfNotifications: (userId) => {
+        let sqlStmt = `SELECT COUNT(*) as total
+            FROM notifications
+            WHERE user_id = ${conn.escape(userId)}`
         return sendQuery(sqlStmt);
     },
 

@@ -17,6 +17,7 @@ const notificationIds = {
 }
 const PUSHY_KEY = process.env.PUSHY_KEY;
 const pushyAPI = new pushy(PUSHY_KEY);
+const resultsPerPagePagination = 10;
 
 module.exports = {
 
@@ -118,6 +119,24 @@ module.exports = {
                 });
             });
         });
+    },
+
+    getTotalNumberOfNotifications: (userId) => {
+        return new Promise((resolve, reject) => {
+            db.getTotalNumberOfNotifications(userId).then((total) => {
+                resolve({
+                    pages: Math.ceil(total[0].total / resultsPerPagePagination)
+                })
+            }).catch((err) => {
+                console.log(err);
+                reject();
+            })
+        });
+    },
+
+    getNotificationsForUser: (userId, page) => {
+        skip = page * resultsPerPagePagination;
+        return db.getNotificationsByUserId(userId, skip, resultsPerPagePagination);
     }
 }
 
