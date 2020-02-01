@@ -30,3 +30,5 @@ router.get('/user/pagination/totalPages/:id', authenticatorMiddleware, (req, res
         res.sendStatus(500);
     })
 });
+
+module.exports = router;
