@@ -64,7 +64,7 @@ module.exports = {
         return db.checkGoalsRequiresPermission(goalIds).then(({requiresPermission, goalId}) => {
             if (requiresPermission == 1)
                 return Promise.reject({
-                    errorCode: 400
+                    errorCode: 401
                 })
             else {
                 const hash = crypto.createHash('sha256');
