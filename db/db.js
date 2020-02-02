@@ -367,6 +367,7 @@ module.exports = {
     },
 
     checkGoalsRequiresPermission: (goalIds) => {
+        console.log("checking requires goals ", goalIds)
         return new Promise((resolve, reject) => {
                 let sqlStmt = `SELECT requires_permission, id
                     FROM goal
