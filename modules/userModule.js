@@ -67,6 +67,12 @@ module.exports = {
         let profilePicFileName = `${email}_profile.jpg`;
         return new Promise((resolve, reject) => {
             fileUtils.saveImageFile(profilePicData, profilePicFileName).then((url) => { // upload profile pic if available
+                db.checkGoalsRequiresPermission(goalIds).then((requiresPermission) => {
+                    if(requiresPermission == 1)
+                        reject({
+                            errorCode: 401
+                        })
+                })
                 db.insertUser(name, lastname, hashedPassword, email, pushyToken, pushyAuthKey, url).then(() => { 
                     db.getLastInsertedUser().then((result) => {
                         db.insertGoalsToUserID(goalIds, result[0].id);
@@ -110,7 +116,13 @@ module.exports = {
                     db.getUserById(id).then((result) => {
                         db.deleteGoalsFromUser(id);
                         if (goalIds.length > 0) {
-                            db.insertGoalsToUserID(goalIds, result[0].id);
+                            db.checkIfGoalsAllowedForUser(id, goalIds).then(() => {
+                                db.insertGoalsToUserID(goalIds, result[0].id);
+                            }).catch((err) => {
+                                reject({
+                                    errorCode: 401
+                                })
+                            })
                         }
                         resolve({
                             id: result[0].id,

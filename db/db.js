@@ -344,6 +344,35 @@ module.exports = {
         sendQuery(sqlStmt);
     },
 
+    checkIfGoalsAllowedForUser: (userId, goalIds) => {
+        return new Promise((resolve, reject) => {
+            let sqlStmt = `SELECT *
+                FROM users_goals_perm
+                WHERE goal_id IN (${conn.escape(goalIds)}) AND user_id = ${conn.escape(userId)}`;
+            sendQuery(sqlStmt).then((result) => {
+                if(result.length > 0)
+                    resolve();
+                else
+                    reject();
+            })
+        })
+    },
+
+    checkGoalsRequiresPermission: (goalIds) => {
+        return new Promise((resolve, reject) => {
+            let sqlStmt = `SELECT requires_permission
+                FROM goal
+                WHERE id IN (${conn.escape(goalIds)})`;
+            sendQuery(sqlStmt).then((result) => {
+                for(let i in result){
+                    if(result[i].requires_permission == 1)
+                        resolve(1)
+                }
+                resolve(0)
+            })
+        })
+    },
+
     deleteGoalsFromUser: (userID) => {
         let sqlStmt = `DELETE FROM goals_users WHERE user_id = ${conn.escape(userID)}`;
         sendQuery(sqlStmt);
