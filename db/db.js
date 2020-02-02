@@ -345,9 +345,12 @@ module.exports = {
     },
 
     checkIfGoalsAllowedForUser: (userId, goalIds) => {
+        console.log(userId, goalIds)
         return new Promise((resolve, reject) => {
             this.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
+                console.log(requiresPermission, goalId)
                 if (requiresPermission == 1) {
+                    console.log("requires permission")
                     let sqlStmt = `SELECT *
                         FROM users_goals_perm
                         WHERE goal_id = ${conn.escape(goalId)} AND user_id = ${conn.escape(userId)}`;

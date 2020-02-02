@@ -70,7 +70,7 @@ module.exports = {
                 db.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
                     if(requiresPermission == 1)
                         return reject({
-                            errorCode: 401
+                            errorCode: 400
                         })
                 })
                 db.insertUser(name, lastname, hashedPassword, email, pushyToken, pushyAuthKey, url).then(() => { 
@@ -120,7 +120,7 @@ module.exports = {
                                 db.insertGoalsToUserID(goalIds, result[0].id);
                             }).catch((err) => {
                                 return reject({
-                                    errorCode: 401
+                                    errorCode: 400
                                 })
                             })
                         }
