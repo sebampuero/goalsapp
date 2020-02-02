@@ -2,10 +2,8 @@ const db = require('../db/db');
 
 
 function test() {
-    db.checkIfGoalsAllowedForUser(71,[14,3,4,5]).then(() => {
-        console.log("then")
-    }).catch(err => {
-        console.log("catch")
+    db.checkGoalsRequiresPermission([14,3,4,5]).then((result) => {
+        console.log(result)
     })
 }
 

@@ -61,7 +61,7 @@ module.exports = {
      * Registers a user
      */
     registerUser: (name, lastname, email, password, goalIds, goals, pushyToken, pushyAuthKey, profilePicData) => {
-        return db.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
+        return db.checkGoalsRequiresPermission(goalIds).then(({requiresPermission, goalId}) => {
             if (requiresPermission == 1)
                 return Promise.reject({
                     errorCode: 400
