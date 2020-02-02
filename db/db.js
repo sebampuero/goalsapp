@@ -365,13 +365,13 @@ module.exports = {
 
     checkGoalsRequiresPermission: (goalIds) => {
         return new Promise((resolve, reject) => {
-            let sqlStmt = `SELECT requires_permission
-                FROM goal
-                WHERE id IN (${conn.escape(goalIds)})`;
+                let sqlStmt = `SELECT requires_permission, id
+                    FROM goal
+                    WHERE id IN (${conn.escape(goalIds)})`;
             sendQuery(sqlStmt).then((result) => {
-                for (let i in result) {
+                for (let i = 0; i < result.length; i++) {
                     if (result[i].requires_permission == 1)
-                        resolve(1, result[i].id)
+                        return resolve(1, result[i].id)
                 }
                 resolve(0)
             })
