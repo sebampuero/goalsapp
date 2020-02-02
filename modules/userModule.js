@@ -69,7 +69,7 @@ module.exports = {
             fileUtils.saveImageFile(profilePicData, profilePicFileName).then((url) => { // upload profile pic if available
                 db.checkGoalsRequiresPermission(goalIds).then((requiresPermission) => {
                     if(requiresPermission == 1)
-                        reject({
+                        return reject({
                             errorCode: 401
                         })
                 })
@@ -119,7 +119,7 @@ module.exports = {
                             db.checkIfGoalsAllowedForUser(id, goalIds).then(() => {
                                 db.insertGoalsToUserID(goalIds, result[0].id);
                             }).catch((err) => {
-                                reject({
+                                return reject({
                                     errorCode: 401
                                 })
                             })
