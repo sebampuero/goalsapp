@@ -46,7 +46,7 @@ function handleDisconnect() {
 }
 handleDisconnect();
 
-module.exports = {
+let dbObj = {
 
     // USER
 
@@ -344,10 +344,24 @@ module.exports = {
         sendQuery(sqlStmt);
     },
 
-    checkIfGoalsAllowedForUser: (userId, goalIds) => {
-        console.log(userId, goalIds)
+    checkGoalsRequiresPermission: (goalIds) => {
         return new Promise((resolve, reject) => {
-            this.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
+            let sqlStmt = `SELECT requires_permission, id
+                FROM goal
+                WHERE id IN (${conn.escape(goalIds)})`;
+            sendQuery(sqlStmt).then((result) => {
+                for (let i = 0; i < result.length; i++) {
+                    if (result[i].requires_permission == 1)
+                        return resolve({requiresPermission: 1, goalId: result[i].id})
+                }
+                resolve({requiresPermission: 0})
+            })
+        })
+    },
+
+    checkIfGoalsAllowedForUser: function (userId, goalIds) {
+        return new Promise((resolve, reject) => {
+            this.checkGoalsRequiresPermission(goalIds).then(({requiresPermission, goalId}) => {
                 console.log(requiresPermission, goalId)
                 if (requiresPermission == 1) {
                     console.log("requires permission")
@@ -360,24 +374,8 @@ module.exports = {
                         else
                             reject()
                     })
-                }else   
+                } else
                     resolve()
-            })
-        })
-    },
-
-    checkGoalsRequiresPermission: (goalIds) => {
-        console.log("checking requires goals ", goalIds)
-        return new Promise((resolve, reject) => {
-                let sqlStmt = `SELECT requires_permission, id
-                    FROM goal
-                    WHERE id IN (${conn.escape(goalIds)})`;
-            sendQuery(sqlStmt).then((result) => {
-                for (let i = 0; i < result.length; i++) {
-                    if (result[i].requires_permission == 1)
-                        return resolve(1, result[i].id)
-                }
-                resolve(0)
             })
         })
     },
@@ -514,6 +512,8 @@ module.exports = {
     }
 
 }
+
+module.exports = dbObj;
 
 /**
  * Executes the query.

@@ -66,6 +66,7 @@ router.get('/:id', authenticatorMiddleware, (req, res) => {
 router.post('/update', authenticatorMiddleware, (req, res) => {
     let body = req.body;
     userModule.updateUser(body.id, body.name, body.lastname, body.email, body.goals, body.goalTags, body.base64ProfilePic).then((result) => {
+        console.log("ok")
         res.send(result);
     }).catch((err) => {
         res.sendStatus(err.errorCode);

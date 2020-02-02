@@ -61,95 +61,98 @@ module.exports = {
      * Registers a user
      */
     registerUser: (name, lastname, email, password, goalIds, goals, pushyToken, pushyAuthKey, profilePicData) => {
-        const hash = crypto.createHash('sha256');
-        hash.update(password);
-        let hashedPassword = hash.digest('hex');
-        let profilePicFileName = `${email}_profile.jpg`;
-        return new Promise((resolve, reject) => {
-            fileUtils.saveImageFile(profilePicData, profilePicFileName).then((url) => { // upload profile pic if available
-                db.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
-                    if(requiresPermission == 1)
-                        return reject({
-                            errorCode: 400
-                        })
+        return db.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
+            if (requiresPermission == 1)
+                return Promise.reject({
+                    errorCode: 400
                 })
-                db.insertUser(name, lastname, hashedPassword, email, pushyToken, pushyAuthKey, url).then(() => { 
-                    db.getLastInsertedUser().then((result) => {
-                        db.insertGoalsToUserID(goalIds, result[0].id);
-                        resolve({
-                            id: result[0].id,
-                            name: result[0].name,
-                            lastname: result[0].lastname,
-                            email: result[0].email,
-                            goals: goalIds,
-                            goalTags: goals,
-                            profilePicUrl: result[0].profile_pic,
-                            pushyToken: result[0].pushy_token,
-                            pushyAuthKey: result[0].pushy_auth_key
+            else {
+                const hash = crypto.createHash('sha256');
+                hash.update(password);
+                let hashedPassword = hash.digest('hex');
+                let profilePicFileName = `${email}_profile.jpg`;
+                return new Promise((resolve, reject) => {
+                    fileUtils.saveImageFile(profilePicData, profilePicFileName).then((url) => { // upload profile pic if available
+                        db.insertUser(name, lastname, hashedPassword, email, pushyToken, pushyAuthKey, url).then(() => {
+                            db.getLastInsertedUser().then((result) => {
+                                db.insertGoalsToUserID(goalIds, result[0].id);
+                                resolve({
+                                    id: result[0].id,
+                                    name: result[0].name,
+                                    lastname: result[0].lastname,
+                                    email: result[0].email,
+                                    goals: goalIds,
+                                    goalTags: goals,
+                                    profilePicUrl: result[0].profile_pic,
+                                    pushyToken: result[0].pushy_token,
+                                    pushyAuthKey: result[0].pushy_auth_key
+                                });
+                            });
+                        }).catch((err) => {
+                            console.log(err);
+                            // throw error for when the given email address already exists in the db
+                            if (err.code == "ER_DUP_ENTRY") {
+                                reject({
+                                    errorCode: 400
+                                });
+                            } else {
+                                reject({
+                                    errorCode: 500
+                                });
+                            }
                         });
-                    });
-                }).catch((err) => {
-                    console.log(err);
-                    // throw error for when the given email address already exists in the db
-                    if (err.code == "ER_DUP_ENTRY") {
-                        reject({
-                            errorCode: 400
-                        });
-                    } else {
-                        reject({
-                            errorCode: 500
-                        });
-                    }
+                    })
                 });
-            })
-        });
+            }
+        })
     },
 
     /**
      * Updates the user's info
      */
     updateUser: (id, name, lastname, email, goalIds, goals, profilePicData) => {
-        return new Promise((resolve, reject) => {
-            let filename = `${email}.jpg`
-            fileUtils.saveImageFile(profilePicData, filename).then((imageUrl) => {
-                db.updateUser(id, name, lastname, email, imageUrl).then(() => {
-                    db.getUserById(id).then((result) => {
-                        if (goalIds.length > 0) {
-                            db.checkIfGoalsAllowedForUser(id, goalIds).then(() => {
+        return db.checkIfGoalsAllowedForUser(id, goalIds).then(() => {
+            return new Promise((resolve, reject) => {
+                let filename = `${email}.jpg`
+                fileUtils.saveImageFile(profilePicData, filename).then((imageUrl) => {
+                    db.updateUser(id, name, lastname, email, imageUrl).then(() => {
+                        db.getUserById(id).then((result) => {
+                            if (goalIds.length > 0) {
                                 db.deleteGoalsFromUser(id);
                                 db.insertGoalsToUserID(goalIds, result[0].id);
-                            }).catch((err) => {
-                                return reject({
-                                    errorCode: 400
-                                })
-                            })
+                            }
+                            resolve({
+                                id: result[0].id,
+                                name: result[0].name,
+                                lastname: result[0].lastname,
+                                email: result[0].email,
+                                goals: goalIds,
+                                goalTags: goals,
+                                profilePicUrl: result[0].profile_pic,
+                                pushyToken: result[0].pushy_token,
+                                pushyAuthKey: result[0].pushy_auth_key
+                            });
+                        })
+                    }).catch((err) => {
+                        console.log(err);
+                        if (err.code == "ER_DUP_ENTRY") {
+                            reject({
+                                errorCode: 400
+                            });
+                        } else {
+                            reject({
+                                errorCode: 500
+                            });
                         }
-                        resolve({
-                            id: result[0].id,
-                            name: result[0].name,
-                            lastname: result[0].lastname,
-                            email: result[0].email,
-                            goals: goalIds,
-                            goalTags: goals,
-                            profilePicUrl: result[0].profile_pic,
-                            pushyToken: result[0].pushy_token,
-                            pushyAuthKey: result[0].pushy_auth_key
-                        });
                     })
-                }).catch((err) => {
-                    console.log(err);
-                    if (err.code == "ER_DUP_ENTRY") {
-                        reject({
-                            errorCode: 400
-                        });
-                    } else {
-                        reject({
-                            errorCode: 500
-                        });
-                    }
                 })
+            });
+        }).catch(() => {
+            return Promise.reject({
+                errorCode: 401
             })
-        });
+        })
+
     },
 
     /**
@@ -226,8 +229,8 @@ module.exports = {
     getUserActivity: (userId) => {
         return new Promise((resolve, reject) => {
             db.getUserChatActivityById(userId).then((result) => {
-                for(let i in result){
-                    if(result[i].new_message == "1")
+                for (let i in result) {
+                    if (result[i].new_message == "1")
                         resolve({
                             chatActivity: true
                         });
