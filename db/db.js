@@ -346,14 +346,19 @@ module.exports = {
 
     checkIfGoalsAllowedForUser: (userId, goalIds) => {
         return new Promise((resolve, reject) => {
-            let sqlStmt = `SELECT *
-                FROM users_goals_perm
-                WHERE goal_id IN (${conn.escape(goalIds)}) AND user_id = ${conn.escape(userId)}`;
-            sendQuery(sqlStmt).then((result) => {
-                if(result.length > 0)
-                    resolve();
-                else
-                    reject();
+            this.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
+                if (requiresPermission == 1) {
+                    let sqlStmt = `SELECT *
+                        FROM users_goals_perm
+                        WHERE goal_id = ${conn.escape(goalId)} AND user_id = ${conn.escape(userId)}`;
+                    sendQuery(sqlStmt).then((result) => {
+                        if (result.length > 0)
+                            resolve()
+                        else
+                            reject()
+                    })
+                }else   
+                    resolve()
             })
         })
     },
@@ -364,9 +369,9 @@ module.exports = {
                 FROM goal
                 WHERE id IN (${conn.escape(goalIds)})`;
             sendQuery(sqlStmt).then((result) => {
-                for(let i in result){
-                    if(result[i].requires_permission == 1)
-                        resolve(1)
+                for (let i in result) {
+                    if (result[i].requires_permission == 1)
+                        resolve(1, result[i].id)
                 }
                 resolve(0)
             })

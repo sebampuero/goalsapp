@@ -67,7 +67,7 @@ module.exports = {
         let profilePicFileName = `${email}_profile.jpg`;
         return new Promise((resolve, reject) => {
             fileUtils.saveImageFile(profilePicData, profilePicFileName).then((url) => { // upload profile pic if available
-                db.checkGoalsRequiresPermission(goalIds).then((requiresPermission) => {
+                db.checkGoalsRequiresPermission(goalIds).then((requiresPermission, goalId) => {
                     if(requiresPermission == 1)
                         return reject({
                             errorCode: 401
@@ -114,9 +114,9 @@ module.exports = {
             fileUtils.saveImageFile(profilePicData, filename).then((imageUrl) => {
                 db.updateUser(id, name, lastname, email, imageUrl).then(() => {
                     db.getUserById(id).then((result) => {
-                        db.deleteGoalsFromUser(id);
                         if (goalIds.length > 0) {
                             db.checkIfGoalsAllowedForUser(id, goalIds).then(() => {
+                                db.deleteGoalsFromUser(id);
                                 db.insertGoalsToUserID(goalIds, result[0].id);
                             }).catch((err) => {
                                 return reject({
