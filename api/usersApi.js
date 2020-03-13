@@ -89,12 +89,15 @@ router.post('/update/password', authenticatorMiddleware, (req, res) => {
  * Registers the user. Does not require authentication.
  */
 router.post('/register', (req, res) => {
+    /*
     let body = req.body;
     userModule.registerUser(body.name, body.lastname, body.email, body.password, body.goals, body.goalTags, body.pushyToken, body.pushyAuthKey, body.base64ProfilePic).then((result)=>{
         res.send(result);
     }).catch((err)=>{
         res.sendStatus(err.errorCode);
     });
+    */
+   return res.sendStatus(500);
 });
 
 module.exports = router;
